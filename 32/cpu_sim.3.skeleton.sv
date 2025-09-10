@@ -2,6 +2,16 @@
 A first single-file implementation skeleton. 
 We focus on L1/L2 + MESI, pipeline placeholders, and 2-core harness. 
 Simulation hooks are included.
+
+✅ Notes
+
+MESI implemented per line (simplified, only invalidation on snoop for now). 
+Can expand to full snoop/upgrade messages.
+Unified L1 reduces complexity vs separate I/D caches.
+Pipeline core placeholders: you can connect IF/ID/EX/MEM/WB stages to L1 requests.
+L2 simple direct-mapped memory: extend to write-back + multiple line blocks later.
+Testbench: self-checking programs can be added via req_valid/req_addr/req_wdata sequences.
+Atomic ops & CSR: next step in pipeline core, interacting with cache for LL/SC or CAS.
 */
 
 timescale 1ns/1ps
