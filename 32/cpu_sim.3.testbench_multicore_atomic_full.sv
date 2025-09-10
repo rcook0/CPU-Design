@@ -1,5 +1,21 @@
 `timescale 1ns/1ps
 
+/*
+Two pipelined cores (IF→ID→EX→MEM→WB)
+
+Full hazard detection and forwarding
+
+Unified L1 caches per core with MESI coherence
+
+LL/SC atomic instructions using reservation bits
+
+Shared L2 cache
+
+Self-checking atomic test program (multiple increments/decrements, branch tests)
+
+Assertions for MESI, hazards, and atomic correctness
+*/
+
 module multicore_atomic_full_tb;
 
     // ------------------------
