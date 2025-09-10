@@ -1,5 +1,22 @@
 `timescale 1ns/1ps
 
+/*
+2 cores, each with core_pipeline.
+Unified L1 cache per core with MESI + reservation bit for atomic ops.
+Shared L2 cache backing memory.
+
+Atomic test program:
+- Shared counter at memory address 0x1000.
+- Core0 increments atomically.
+- Core1 decrements atomically.
+- Run N iterations → expect counter = 0 at the end.
+
+Assertions:
+- MESI state validity.
+- Atomic success/failure matches expectations.
+- Pipeline hazards are detected.
+*/
+
 module multicore_atomic_tb;
     logic clk; initial clk=0; always #5 clk=~clk;
     logic rst_n; initial begin rst_n=0; #20; rst_n=1; end
