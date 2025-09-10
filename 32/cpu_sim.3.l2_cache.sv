@@ -1,5 +1,24 @@
 `timescale 1ns/1ps
 
+/*
+Direct-mapped L2:
+Each address maps directly to a memory location (mem[addr>>2]).
+
+Fixed latency simulation:
+LATENCY=4 cycles by default.
+Requests move through a small pipeline to simulate L2 access delay.
+
+Read and write support:
+req_wr=1 writes to memory
+req_wr=0 reads from memory
+
+Pipeline registers:
+Ensures resp_valid is asserted after LATENCY cycles
+
+Simple backing memory:
+Uses mem[0:16383] as the storage array
+*/
+
 module l2_cache #(
     parameter ADDR_WIDTH = 32,
     parameter DATA_WIDTH = 32,
