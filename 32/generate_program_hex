@@ -1,0 +1,21 @@
+NUM_ITER = 500
+with open("program.hex","w") as f:
+    # Core 0
+    for i in range(NUM_ITER):
+        f.write("10000001\n")   # LL
+        f.write("30010001\n")   # ADD +1
+        f.write("20010001\n")   # SC
+        f.write("50000000\n")   # BRZ retry
+        f.write("00000000\n")   # NOP
+
+    # Padding to offset Core 1 start (e.g., address 128)
+    for i in range(128):
+        f.write("00000000\n")
+
+    # Core 1
+    for i in range(NUM_ITER):
+        f.write("10000001\n")   # LL
+        f.write("3001FFFE\n")   # ADD -1
+        f.write("20010001\n")   # SC
+        f.write("50000080\n")   # BRZ retry
+        f.write("00000000\n")   # NOP
