@@ -1,0 +1,18 @@
+[dumpfile] "waves.vcd"
+[savefile] "cpu32.gtkw"
+[timestart] 0
+[signals_width] 180
+[sst_expanded] 1
+[sst_vpane_expanded] 1
+[treeopen] multicore_full_sim2
+[treeopen] multicore_full_sim2.dut
+[treeopen] multicore_full_sim2.dut.G_CORE[0]
+[treeopen] multicore_full_sim2.dut.G_CORE[0].u_core
+[sst_signal] multicore_full_sim2.clk
+[sst_signal] multicore_full_sim2.rst_n
+[sst_signal] multicore_full_sim2.dut.halted[0]
+[sst_signal] multicore_full_sim2.dut.halted[1]
+[sst_signal] multicore_full_sim2.dut.G_CORE[0].u_core.IF.pc
+[sst_signal] multicore_full_sim2.dut.G_CORE[0].u_core.ID.instr
+[sst_signal] multicore_full_sim2.dut.G_CORE[0].u_core.WB.wb
+
