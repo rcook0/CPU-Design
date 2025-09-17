@@ -114,4 +114,42 @@ module multicore_full_sim;
         .mem_resp1(mem_resp1)
     );
 
+// -----------------------------------------------------------------------------
+// Self-check: after N cycles, the shared counter at 0x1000 must be 0.
+// Adjust CYCLES as needed to comfortably exceed your program length.
+// -----------------------------------------------------------------------------
+localparam int CYCLES = 200_000;  // sim budget
+
+initial begin
+  // VCD (optional)
+  $dumpfile("multicore_full_sim.vcd");
+  $dumpvars(0, multicore_full_sim);
+
+  // Wait for reset deassert
+  @(negedge rst_n);
+  @(posedge rst_n);
+
+  // Let the program run
+  repeat (CYCLES) @(posedge clk);
+
+  int final_val = l2.mem[32'h1000 >> 2];  // uses l2_cache's exposed mem[]
+  $display("[SELF-CHECK] Final shared counter = %0d", final_val);
+
+  if (final_val !== 0) begin
+    $error("[FAIL] Atomic LL/SC test failed: expected 0, got %0d", final_val);
+    $fatal(1);
+  end else begin
+    $display("[PASS] Atomic LL/SC test passed: counter == 0");
+  end
+
+    // Never allow absurd values (quick sanity while running)
+    always @(posedge clk) begin
+      assert (l2.mem[32'h1000 >> 2] < 1_000_000)
+        else $fatal(2, "[ASSERT] Counter exploded: %0d", l2.mem[32'h1000 >> 2]);
+    end
+    
+  $finish;
+end
+
+
 endmodule
