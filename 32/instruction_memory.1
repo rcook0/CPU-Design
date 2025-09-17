@@ -1,0 +1,69 @@
+`timescale 1ns/1ps
+// instruction_memory.sv module for your 2-core simulation, 
+// preloaded with a self-checking LL/SC atomic test program 
+
+module instruction_memory #(
+    parameter ADDR_WIDTH = 32,
+    parameter DATA_WIDTH = 32,
+    parameter SIZE = 256
+)(
+    input  logic [ADDR_WIDTH-1:0] addr,
+    output logic [DATA_WIDTH-1:0] data
+);
+
+    // ----------------------------
+    // Memory array
+    // ----------------------------
+    logic [DATA_WIDTH-1:0] mem [0:SIZE-1];
+
+    // ----------------------------
+    // Toy instruction encoding
+    // Example format (simplified):
+    // [31:28] opcode, [27:24] rd, [23:20] rs1, [19:16] rs2, [15:0] imm
+    // Opcodes:
+    // 4'b0000: NOP
+    // 4'b0001: LL   (Load-Linked)
+    // 4'b0010: SC   (Store-Conditional)
+    // 4'b0011: ADD
+    // 4'b0100: SUB
+    // 4'b0101: BRZ (branch if zero)
+    // 4'b0110: JMP
+    // 4'b1111: HALT
+    // ----------------------------
+
+    integer i;
+    initial begin
+        // Initialize memory
+        for(i=0;i<SIZE;i=i+1) mem[i] = 32'h0000_0000;
+
+        // ----------------------------
+        // Self-checking atomic test
+        // Shared counter at memory address 0x1000
+        // Each core runs a loop: LL, ADD 1, SC, repeat
+        // ----------------------------
+
+        // Core 0 program (start at PC=0)
+        mem[0]  = 32'h1000_0001; // LL  R1, [0x1000]
+        mem[1]  = 32'h3001_0010; // ADD R1, R1, #1
+        mem[2]  = 32'h2001_0001; // SC  R1, [0x1000]
+        mem[3]  = 32'h5000_0000; // BRZ R1, loop_start (retry if SC failed)
+        mem[4]  = 32'h1111_1111; // HALT
+
+        // Core 1 program (start at PC=128)
+        mem[128]  = 32'h1000_0001; // LL  R1, [0x1000]
+        mem[129]  = 32'h3001_0010; // ADD R1, R1, #(-1)  (decrement)
+        mem[130]  = 32'h2001_0001; // SC  R1, [0x1000]
+        mem[131]  = 32'h5000_0080; // BRZ R1, retry
+        mem[132]  = 32'h1111_1111; // HALT
+
+        // Optional NOP padding
+        for(i=5;i<128;i=i+1) mem[i] = 32'h0000_0000;
+        for(i=133;i<SIZE;i=i+1) mem[i] = 32'h0000_0000;
+    end
+
+    // ----------------------------
+    // Instruction fetch
+    // ----------------------------
+    assign data = mem[addr[7:0]];
+
+endmodule
